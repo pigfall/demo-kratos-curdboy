@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package curdboy.common;
+
+option go_package = "github.com/pigfall/demo-kratos-curdboy/api;common";
+
+message QueryRequest  {
+	string filter =1;
+	int32 page_index =2;
+	int32 page_size =3;
+}

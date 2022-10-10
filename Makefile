@@ -42,10 +42,15 @@ api:
 	       --openapi_out=fq_schema_naming=true,default_response=false:. \
 	       $(API_PROTO_FILES)
 
+
 .PHONY: build
 # build
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
+
+.PHONY: curd
+curd:
+	go run -mod=mod github.com/pigfall/go-kratos-curdboy/cmd/kratos-cbc@v0.0.2 --schemaDirPath ./ent/schema --targetDirPath curdboy --entTargetDirPath ./ent
 
 .PHONY: generate
 # generate

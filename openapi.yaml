@@ -3,15 +3,13 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
     /helloworld/{name}:
         get:
             tags:
                 - Greeter
-                - subgroup
             description: Sends a greeting
             operationId: Greeter_SayHello
             parameters:
@@ -27,6 +25,50 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /user:
+        get:
+            tags:
+                - User
+            operationId: User_Query
+            parameters:
+                - name: filter
+                  in: query
+                  schema:
+                    type: string
+                - name: pageIndex
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserQueryResponse'
+        post:
+            tags:
+                - User
+            operationId: User_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserCreateResponse'
 components:
     schemas:
         helloworld.v1.HelloReply:
@@ -35,5 +77,28 @@ components:
                 message:
                     type: string
             description: The response message containing the greetings
+        user.v1.UserCreateResponse:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int32
+        user.v1.UserQueryResponse:
+            type: object
+            properties:
+                meta:
+                    $ref: '#/components/schemas/user.v1.UserQueryResponseMeta'
+                data:
+                    type: array
+                    items:
+                        type: object
+        user.v1.UserQueryResponseMeta:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    format: int64
 tags:
     - name: Greeter
+      description: The greeting service definition.
+    - name: User
