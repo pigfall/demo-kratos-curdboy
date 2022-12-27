@@ -4,10 +4,12 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/pigfall/demo-kratos-curdboy/ent/car"
 	"github.com/pigfall/demo-kratos-curdboy/ent/user"
 )
 
@@ -16,6 +18,33 @@ type UserCreate struct {
 	config
 	mutation *UserMutation
 	hooks    []Hook
+}
+
+// SetName sets the "name" field.
+func (uc *UserCreate) SetName(s string) *UserCreate {
+	uc.mutation.SetName(s)
+	return uc
+}
+
+// SetAge sets the "age" field.
+func (uc *UserCreate) SetAge(i int) *UserCreate {
+	uc.mutation.SetAge(i)
+	return uc
+}
+
+// AddCarIDs adds the "cars" edge to the Car entity by IDs.
+func (uc *UserCreate) AddCarIDs(ids ...int) *UserCreate {
+	uc.mutation.AddCarIDs(ids...)
+	return uc
+}
+
+// AddCars adds the "cars" edges to the Car entity.
+func (uc *UserCreate) AddCars(c ...*Car) *UserCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddCarIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -94,6 +123,12 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
+	if _, ok := uc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
+	}
+	if _, ok := uc.mutation.Age(); !ok {
+		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "User.age"`)}
+	}
 	return nil
 }
 
@@ -121,6 +156,41 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	if value, ok := uc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := uc.mutation.Age(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldAge,
+		})
+		_node.Age = value
+	}
+	if nodes := uc.mutation.CarsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CarsTable,
+			Columns: []string{user.CarsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: car.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 

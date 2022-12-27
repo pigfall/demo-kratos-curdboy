@@ -8,9 +8,42 @@ import (
 )
 
 var (
+	// CarsColumns holds the columns for the "cars" table.
+	CarsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "user_cars", Type: field.TypeInt, Nullable: true},
+	}
+	// CarsTable holds the schema information for the "cars" table.
+	CarsTable = &schema.Table{
+		Name:       "cars",
+		Columns:    CarsColumns,
+		PrimaryKey: []*schema.Column{CarsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cars_users_cars",
+				Columns:    []*schema.Column{CarsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// DeptsColumns holds the columns for the "depts" table.
+	DeptsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+	}
+	// DeptsTable holds the schema information for the "depts" table.
+	DeptsTable = &schema.Table{
+		Name:       "depts",
+		Columns:    DeptsColumns,
+		PrimaryKey: []*schema.Column{DeptsColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "age", Type: field.TypeInt},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -20,9 +53,12 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		CarsTable,
+		DeptsTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	CarsTable.ForeignKeys[0].RefTable = UsersTable
 }

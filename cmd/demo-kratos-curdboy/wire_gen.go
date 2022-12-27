@@ -7,14 +7,13 @@
 package main
 
 import (
+	"github.com/go-kratos/kratos/v2"
+	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pigfall/demo-kratos-curdboy/internal/biz"
 	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 	"github.com/pigfall/demo-kratos-curdboy/internal/data"
 	"github.com/pigfall/demo-kratos-curdboy/internal/server"
 	"github.com/pigfall/demo-kratos-curdboy/internal/service"
-
-	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 // Injectors from wire.go:

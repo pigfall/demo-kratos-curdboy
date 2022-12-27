@@ -12,9 +12,34 @@ import (
 
 // User is the model entity for the User schema.
 type User struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Age holds the value of the "age" field.
+	Age int `json:"age,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges UserEdges `json:"edges"`
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Cars holds the value of the cars edge.
+	Cars []*Car `json:"cars,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CarsOrErr returns the Cars value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CarsOrErr() ([]*Car, error) {
+	if e.loadedTypes[0] {
+		return e.Cars, nil
+	}
+	return nil, &NotLoadedError{edge: "cars"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -22,8 +47,10 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
+		case user.FieldID, user.FieldAge:
 			values[i] = new(sql.NullInt64)
+		case user.FieldName:
+			values[i] = new(sql.NullString)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -45,9 +72,26 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			u.ID = int(value.Int64)
+		case user.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				u.Name = value.String
+			}
+		case user.FieldAge:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field age", values[i])
+			} else if value.Valid {
+				u.Age = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryCars queries the "cars" edge of the User entity.
+func (u *User) QueryCars() *CarQuery {
+	return (&UserClient{config: u.config}).QueryCars(u)
 }
 
 // Update returns a builder for updating this User.
@@ -72,7 +116,12 @@ func (u *User) Unwrap() *User {
 func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
-	builder.WriteString(fmt.Sprintf("id=%v", u.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString("name=")
+	builder.WriteString(u.Name)
+	builder.WriteString(", ")
+	builder.WriteString("age=")
+	builder.WriteString(fmt.Sprintf("%v", u.Age))
 	builder.WriteByte(')')
 	return builder.String()
 }
