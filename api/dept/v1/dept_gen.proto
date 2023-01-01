@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package dept.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+import "common.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/pigfall/demo-kratos-curdboy/api/dept/v1;pbdept";
+
+service Dept{
+  rpc Create(google.protobuf.Struct) returns(DeptCreateResponse){
+    option (google.api.http) = { post:"/dept" body:"*"  };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = { summary:"Create Dept"};
+  };
+
+  rpc Query(curdboy.common.QueryRequest) returns(DeptQueryResponse){
+    option (google.api.http) = { get:"/dept"  };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = { summary:"Find Dept"  };
+
+  };
+}
+
+message DeptCreateResponse{
+  int32 id =1;
+}
+
+message DeptQueryResponse{
+  DeptQueryResponseMeta meta =1;
+  repeated google.protobuf.Struct data=2;
+}
+
+message  DeptQueryResponseMeta {
+  int64 count =1;
+}

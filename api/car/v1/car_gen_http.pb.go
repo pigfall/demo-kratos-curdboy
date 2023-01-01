@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-http v2.5.3
 // - protoc             v3.6.1
-// source: user/v1/user_gen.proto
+// source: car/v1/car_gen.proto
 
-package pbuser
+package pbcar
 
 import (
 	context "context"
@@ -21,27 +21,27 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationUserCreate = "/user.v1.User/Create"
-const OperationUserQuery = "/user.v1.User/Query"
+const OperationCarCreate = "/car.v1.Car/Create"
+const OperationCarQuery = "/car.v1.Car/Query"
 
-type UserHTTPServer interface {
-	Create(context.Context, *structpb.Struct) (*UserCreateResponse, error)
-	Query(context.Context, *api.QueryRequest) (*UserQueryResponse, error)
+type CarHTTPServer interface {
+	Create(context.Context, *structpb.Struct) (*CarCreateResponse, error)
+	Query(context.Context, *api.QueryRequest) (*CarQueryResponse, error)
 }
 
-func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
+func RegisterCarHTTPServer(s *http.Server, srv CarHTTPServer) {
 	r := s.Route("/")
-	r.POST("/user", _User_Create2_HTTP_Handler(srv))
-	r.GET("/user", _User_Query2_HTTP_Handler(srv))
+	r.POST("/car", _Car_Create1_HTTP_Handler(srv))
+	r.GET("/car", _Car_Query1_HTTP_Handler(srv))
 }
 
-func _User_Create2_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
+func _Car_Create1_HTTP_Handler(srv CarHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in structpb.Struct
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationUserCreate)
+		http.SetOperation(ctx, OperationCarCreate)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Create(ctx, req.(*structpb.Struct))
 		})
@@ -49,18 +49,18 @@ func _User_Create2_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error
 		if err != nil {
 			return err
 		}
-		reply := out.(*UserCreateResponse)
+		reply := out.(*CarCreateResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
-func _User_Query2_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
+func _Car_Query1_HTTP_Handler(srv CarHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in api.QueryRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationUserQuery)
+		http.SetOperation(ctx, OperationCarQuery)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.Query(ctx, req.(*api.QueryRequest))
 		})
@@ -68,29 +68,29 @@ func _User_Query2_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error 
 		if err != nil {
 			return err
 		}
-		reply := out.(*UserQueryResponse)
+		reply := out.(*CarQueryResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
-type UserHTTPClient interface {
-	Create(ctx context.Context, req *structpb.Struct, opts ...http.CallOption) (rsp *UserCreateResponse, err error)
-	Query(ctx context.Context, req *api.QueryRequest, opts ...http.CallOption) (rsp *UserQueryResponse, err error)
+type CarHTTPClient interface {
+	Create(ctx context.Context, req *structpb.Struct, opts ...http.CallOption) (rsp *CarCreateResponse, err error)
+	Query(ctx context.Context, req *api.QueryRequest, opts ...http.CallOption) (rsp *CarQueryResponse, err error)
 }
 
-type UserHTTPClientImpl struct {
+type CarHTTPClientImpl struct {
 	cc *http.Client
 }
 
-func NewUserHTTPClient(client *http.Client) UserHTTPClient {
-	return &UserHTTPClientImpl{client}
+func NewCarHTTPClient(client *http.Client) CarHTTPClient {
+	return &CarHTTPClientImpl{client}
 }
 
-func (c *UserHTTPClientImpl) Create(ctx context.Context, in *structpb.Struct, opts ...http.CallOption) (*UserCreateResponse, error) {
-	var out UserCreateResponse
-	pattern := "/user"
+func (c *CarHTTPClientImpl) Create(ctx context.Context, in *structpb.Struct, opts ...http.CallOption) (*CarCreateResponse, error) {
+	var out CarCreateResponse
+	pattern := "/car"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationUserCreate))
+	opts = append(opts, http.Operation(OperationCarCreate))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
@@ -99,11 +99,11 @@ func (c *UserHTTPClientImpl) Create(ctx context.Context, in *structpb.Struct, op
 	return &out, err
 }
 
-func (c *UserHTTPClientImpl) Query(ctx context.Context, in *api.QueryRequest, opts ...http.CallOption) (*UserQueryResponse, error) {
-	var out UserQueryResponse
-	pattern := "/user"
+func (c *CarHTTPClientImpl) Query(ctx context.Context, in *api.QueryRequest, opts ...http.CallOption) (*CarQueryResponse, error) {
+	var out CarQueryResponse
+	pattern := "/car"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationUserQuery))
+	opts = append(opts, http.Operation(OperationCarQuery))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

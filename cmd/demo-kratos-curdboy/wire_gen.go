@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/pigfall/demo-kratos-curdboy/ent"
 	"github.com/pigfall/demo-kratos-curdboy/internal/biz"
 	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 	"github.com/pigfall/demo-kratos-curdboy/internal/data"
@@ -19,18 +20,13 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(confData, logger)
-	if err != nil {
-		return nil, nil, err
-	}
-	greeterRepo := data.NewGreeterRepo(dataData, logger)
-	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	greeterService := service.NewGreeterService(greeterUsecase)
-	grpcServer := server.NewGRPCServer(confServer, greeterService, logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService, logger)
+func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger, client *ent.Client) (*kratos.App, func(), error) {
+	userStorage := data.NewUserStorage(client)
+	userBiz := biz.NewUserBiz(userStorage)
+	userSvc := service.NewUserSvc(userBiz)
+	grpcServer := server.NewGRPCServer(confServer, userSvc, logger)
+	httpServer := server.NewHTTPServer(confServer, userSvc, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, func() {
-		cleanup()
 	}, nil
 }

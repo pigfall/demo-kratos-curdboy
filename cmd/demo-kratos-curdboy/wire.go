@@ -6,6 +6,7 @@
 package main
 
 import (
+	"github.com/pigfall/demo-kratos-curdboy/ent"
 	"github.com/pigfall/demo-kratos-curdboy/internal/biz"
 	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 	"github.com/pigfall/demo-kratos-curdboy/internal/data"
@@ -18,6 +19,6 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
+func wireApp(*conf.Server, *conf.Data, log.Logger, *ent.Client) (*kratos.App, func(), error) {
 	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }

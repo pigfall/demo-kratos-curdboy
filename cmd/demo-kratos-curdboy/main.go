@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 
+	"github.com/pigfall/demo-kratos-curdboy/ent"
 	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
@@ -72,7 +73,16 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	logHelper := log.NewHelper(logger)
+	logHelper.Info("connecting to db")
+	entClient, err := ent.Open(
+		bc.GetData().GetDatabase().Driver,
+		bc.GetData().GetDatabase().Source,
+	)
+	defer entClient.Close()
+	logHelper.Info("db connected")
+
+	app, cleanup, err := wireApp(bc.Server, bc.Data, logger, entClient)
 	if err != nil {
 		panic(err)
 	}

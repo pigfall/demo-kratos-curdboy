@@ -17,11 +17,10 @@ endif
 .PHONY: init
 # init env
 init:
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
-	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
-	go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
+	go install google.golang.org/protobuf/cmd/protoc-gen-go
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2
+	go install github.com/google/gnostic/cmd/protoc-gen-openapi
 
 .PHONY: config
 # generate internal proto
@@ -50,7 +49,8 @@ build:
 
 .PHONY: curd
 curd:
-	go run -mod=mod github.com/pigfall/go-kratos-curdboy/cmd/kratos-cbc@v0.0.2 --schemaDirPath ./ent/schema --targetDirPath curdboy --entTargetDirPath ./ent
+	#go run -mod=mod github.com/pigfall/go-kratos-curdboy/cmd/kratos-cbc@v0.0.2 --schemaDirPath ./ent/schema --targetDirPath curdboy --entTargetDirPath ./ent
+	go run -mod=mod github.com/pigfall/go-kratos-curdboy/cmd/kratos-cbc --schemaDirPath ./ent/schema --targetDirPath curdboy --entTargetDirPath ./ent
 
 .PHONY: generate
 # generate
@@ -62,9 +62,11 @@ generate:
 .PHONY: all
 # generate all
 all:
-	make api;
+	make init;
 	make config;
 	make generate;
+	make curd;
+	make api;
 
 # show help
 help:

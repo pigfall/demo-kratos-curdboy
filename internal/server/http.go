@@ -1,7 +1,7 @@
 package server
 
 import (
-	v1 "github.com/pigfall/demo-kratos-curdboy/api/helloworld/v1"
+	v1 "github.com/pigfall/demo-kratos-curdboy/api/user/v1"
 	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 	"github.com/pigfall/demo-kratos-curdboy/internal/service"
 
@@ -11,7 +11,7 @@ import (
 )
 
 // NewHTTPServer new a HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, userSvc *service.UserSvc, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -27,6 +27,6 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	v1.RegisterGreeterHTTPServer(srv, greeter)
+	v1.RegisterUserHTTPServer(srv,userSvc)
 	return srv
 }

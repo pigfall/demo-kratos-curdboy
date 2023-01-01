@@ -48,6 +48,20 @@ func UserCreate (ctx context.Context,fieldsData map[string]interface{},entCli *e
   for k,v := range fieldsData {
     _ = v
     switch k {
+    case "name":
+      value,err := UserNameValueFromInterface(v)
+      if err != nil {
+        outErr = fmt.Errorf("field name type not match for node User: %w",err)
+        return 
+      }
+      mutation.SetName(value)
+    case "age":
+      value,err := UserAgeValueFromInterface(v)
+      if err != nil {
+        outErr = fmt.Errorf("field age type not match for node User: %w",err)
+        return 
+      }
+      mutation.SetAge(value)
       case "id":
       outErr = fmt.Errorf("field id is auto generated, do not set value to the field")
       return
@@ -131,6 +145,20 @@ func UserUpdate (ctx context.Context,entCli *ent.Client,req *UpdateRequest)(erro
   for field,v := range req.Data{
     _ = v
     switch field {
+    case "name":
+    value,err := UserNameValueFromInterface(v)
+    if err != nil {
+      err = fmt.Errorf("field name type not match for node User: %w",err)
+      return err
+    }
+    mutation.SetName(value)
+    case "age":
+    value,err := UserAgeValueFromInterface(v)
+    if err != nil {
+      err = fmt.Errorf("field age type not match for node User: %w",err)
+      return err
+    }
+    mutation.SetAge(value)
     case "id":
     err := fmt.Errorf("field id is auto generated, do not set value to the field")
     return err
@@ -231,6 +259,85 @@ func(this *FilterVisitorUser)	VisitComparisionExpr(expr *filter.ComparisionExpr)
 		var field = paths[0]
 		switch field {
 		
+		
+		case "name":
+			switch expr.Op.Tpe {
+				case filter.TokenType_KW_Eq:
+					if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameEQ(expr.Right.GetStringValue()),nil
+				case filter.TokenType_KW_Ne:
+					if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameNEQ(expr.Right.GetStringValue()),nil
+				case filter.TokenType_KW_Lt:
+					if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameLT(expr.Right.GetStringValue()),nil
+				case filter.TokenType_KW_Le:
+					if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameLTE(expr.Right.GetStringValue()),nil
+				case filter.TokenType_KW_Gt:
+					if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameGT(expr.Right.GetStringValue()),nil
+				case filter.TokenType_KW_Ge:
+					if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameGTE(expr.Right.GetStringValue()),nil
+				case filter.TokenType_KW_Like:if expr.Right.IsNumber(){
+						return  nil,fmt.Errorf("the field name of node User type not matched, expect string but get number")
+					}
+					return user.NameContains(expr.Right.GetStringValue()),nil
+				default: 
+					return nil, fmt.Errorf("unexptected comparision operator %s",expr.Op.Literal)
+			}
+		
+		
+		case "age":
+			switch expr.Op.Tpe {
+				case filter.TokenType_KW_Eq:
+					if !expr.Right.IsNumber(){
+						return nil,fmt.Errorf("the field age of node User type not matched, expect number but get string")
+					}
+					return user.AgeEQ(int(expr.Right.GetNumberValue())),nil
+				case filter.TokenType_KW_Ne:
+					if !expr.Right.IsNumber(){
+						return nil,fmt.Errorf("the field age of node User type not matched, expect number but get string")
+					}
+					return user.AgeNEQ(int(expr.Right.GetNumberValue())),nil
+				case filter.TokenType_KW_Lt:
+					if !expr.Right.IsNumber(){
+						return nil,fmt.Errorf("the field age of node User type not matched, expect number but get string")
+					}
+					return user.AgeLT(int(expr.Right.GetNumberValue())),nil
+				case filter.TokenType_KW_Le:
+					if !expr.Right.IsNumber(){
+						return nil,fmt.Errorf("the field age of node User type not matched, expect number but get string")
+					}
+					return user.AgeLTE(int(expr.Right.GetNumberValue())),nil
+				case filter.TokenType_KW_Gt:
+					if !expr.Right.IsNumber(){
+						return nil,fmt.Errorf("the field age of node User type not matched, expect number but get string")
+					}
+					return user.AgeGT(int(expr.Right.GetNumberValue())),nil
+				case filter.TokenType_KW_Ge:
+					if !expr.Right.IsNumber(){
+						return nil,fmt.Errorf("the field age of node User type not matched, expect number but get string")
+					}
+					return user.AgeGTE(int(expr.Right.GetNumberValue())),nil
+				case filter.TokenType_KW_Like:return nil,fmt.Errorf("field Age of node User is not string type, cannot use like operator")
+				default: 
+					return nil, fmt.Errorf("unexptected comparision operator %s",expr.Op.Literal)
+			}
+		
 		default:
 			return nil, fmt.Errorf("undefined field < %s > for node < %s >",field,"User")
 		}
@@ -269,6 +376,30 @@ func(this *FilterVisitorUser)	VisitUnaryExpr(expr *filter.UnaryExpr)(interface{}
 
 // { တ7 functions to convert field value from interface to the real type
 
+
+func UserNameValueFromInterface(v interface{})(value string,err error){
+   // TODO sync with fieldTypeStr
+  var ok bool
+  value,ok = v.(string)
+  if !ok {
+    err = fmt.Errorf("The type of The field <$field.Name> of node < User> is  string")
+    return
+  }
+
+  return
+}
+
+func UserAgeValueFromInterface(v interface{})(value int,err error){
+   // TODO sync with fieldTypeStr
+  var ok bool
+  value,ok = v.(int)
+  if !ok {
+    err = fmt.Errorf("The type of The field <$field.Name> of node < User> is  int")
+    return
+  }
+
+  return
+}
 
 func UserIDValueFromInterface(v interface{})(value int,err error){
    // TODO sync with fieldTypeStr
