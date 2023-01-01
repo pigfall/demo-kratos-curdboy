@@ -7,8 +7,10 @@ require (
 	github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2 v2.0.0-20221220065744-a017ab09576f
 	github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2 v2.0.0-20221220065744-a017ab09576f
 	github.com/go-kratos/kratos/v2 v2.4.1
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/gnostic v0.6.9
 	github.com/google/wire v0.5.0
+	github.com/gorilla/handlers v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/pigfall/curdboy v0.0.3
 	github.com/pigfall/go-kratos-curdboy v0.0.2
@@ -23,6 +25,7 @@ require (
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -30,7 +33,6 @@ require (
 	github.com/go-playground/form/v4 v4.2.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
-	github.com/google/subcommands v1.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
@@ -41,7 +43,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pigfall/ent_utils v0.0.2 // indirect
 	github.com/pigfall/gosdk v0.0.4 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xlab/treeprint v1.1.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	go.opentelemetry.io/otel v1.7.0 // indirect

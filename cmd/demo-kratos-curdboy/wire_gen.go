@@ -17,6 +17,10 @@ import (
 	"github.com/pigfall/demo-kratos-curdboy/internal/service"
 )
 
+import (
+	_ "github.com/go-sql-driver/mysql"
+)
+
 // Injectors from wire.go:
 
 // wireApp init kratos application.
@@ -24,8 +28,14 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger, cl
 	userStorage := data.NewUserStorage(client)
 	userBiz := biz.NewUserBiz(userStorage)
 	userSvc := service.NewUserSvc(userBiz)
-	grpcServer := server.NewGRPCServer(confServer, userSvc, logger)
-	httpServer := server.NewHTTPServer(confServer, userSvc, logger)
+	deptStorage := data.NewDeptStorage(client)
+	deptBiz := biz.NewDeptBiz(deptStorage)
+	deptSvc := service.NewDeptSvc(deptBiz)
+	carStorage := data.NewCarStorage(client)
+	carBiz := biz.NewCarBiz(carStorage)
+	carSvc := service.NewCarSvc(carBiz)
+	grpcServer := server.NewGRPCServer(confServer, userSvc, deptSvc, carSvc, logger)
+	httpServer := server.NewHTTPServer(confServer, userSvc, deptSvc, carSvc, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, func() {
 	}, nil

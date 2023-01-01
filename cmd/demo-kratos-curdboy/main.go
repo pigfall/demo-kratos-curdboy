@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"fmt"
 	"os"
 
-	"github.com/pigfall/demo-kratos-curdboy/ent"
-	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
-
+	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -14,6 +14,10 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/pigfall/demo-kratos-curdboy/ent"
+	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -75,12 +79,20 @@ func main() {
 
 	logHelper := log.NewHelper(logger)
 	logHelper.Info("connecting to db")
-	entClient, err := ent.Open(
-		bc.GetData().GetDatabase().Driver,
-		bc.GetData().GetDatabase().Source,
-	)
-	defer entClient.Close()
+	drv, err := sql.Open(bc.GetData().GetDatabase().Driver, bc.GetData().GetDatabase().Source)
+	if err != nil {
+		panic(err)
+	}
+	if err := drv.DB().Ping(); err != nil {
+		panic(err)
+	}
+	entClient := ent.NewClient(ent.Driver(drv))
 	logHelper.Info("db connected")
+	if err := entClient.Schema.Create(context.Background()); err != nil {
+		err = fmt.Errorf("migrate schema error: %w\n", err)
+		logHelper.Error(err)
+		panic(err)
+	}
 
 	app, cleanup, err := wireApp(bc.Server, bc.Data, logger, entClient)
 	if err != nil {

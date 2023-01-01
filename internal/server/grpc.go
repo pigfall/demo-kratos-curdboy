@@ -1,6 +1,8 @@
 package server
 
 import (
+	v1Car "github.com/pigfall/demo-kratos-curdboy/api/car/v1"
+	v1Dept "github.com/pigfall/demo-kratos-curdboy/api/dept/v1"
 	v1 "github.com/pigfall/demo-kratos-curdboy/api/user/v1"
 	"github.com/pigfall/demo-kratos-curdboy/internal/conf"
 	"github.com/pigfall/demo-kratos-curdboy/internal/service"
@@ -11,7 +13,7 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, userSvc *service.UserSvc, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, userSvc *service.UserSvc, deptSvc *service.DeptSvc, carSvc *service.CarSvc, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -28,5 +30,7 @@ func NewGRPCServer(c *conf.Server, userSvc *service.UserSvc, logger log.Logger) 
 	}
 	srv := grpc.NewServer(opts...)
 	v1.RegisterUserServer(srv, userSvc)
+	v1Dept.RegisterDeptServer(srv, deptSvc)
+	v1Car.RegisterCarServer(srv, carSvc)
 	return srv
 }
