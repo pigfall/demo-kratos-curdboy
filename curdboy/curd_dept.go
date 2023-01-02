@@ -328,7 +328,12 @@ func(this *FilterVisitorDept)	VisitUnaryExpr(expr *filter.UnaryExpr)(interface{}
 func DeptNameValueFromInterface(v interface{})(value string,err error){
    // TODO sync with fieldTypeStr
   var ok bool
-  value,ok = v.(string)
+  
+  
+  
+    value,ok = v.(string)
+  
+
   if !ok {
     err = fmt.Errorf("The type of The field <$field.Name> of node < Dept> is  string")
     return
@@ -340,7 +345,30 @@ func DeptNameValueFromInterface(v interface{})(value string,err error){
 func DeptIDValueFromInterface(v interface{})(value int,err error){
    // TODO sync with fieldTypeStr
   var ok bool
-  value,ok = v.(int)
+  
+  
+  
+    
+  switch assertedV:=v.(type){
+  case int:
+    ok = true
+    value = int(assertedV)
+  case int32:
+    ok = true
+    value = int(assertedV)
+  case int64:
+    ok = true
+    value = int(assertedV)
+  case float32:
+    ok = true
+    value = int(assertedV)
+  case float64:
+    ok = true
+    value = int(assertedV)
+  }
+
+  
+
   if !ok {
     err = fmt.Errorf("The type of The field <$field.Name> of node < Dept> is  int")
     return
@@ -350,6 +378,10 @@ func DeptIDValueFromInterface(v interface{})(value int,err error){
 }
 
 // }
+
+
+
+
 
 
 // { တ8 parse fields expr to field selector object which is used to select the field we want to query

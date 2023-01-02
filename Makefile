@@ -56,7 +56,7 @@ curd:
 # generate
 generate:
 	go mod tidy
-	go get github.com/google/wire/cmd/wire@latest
+	go get github.com/google/wire/cmd/wire
 	go generate ./...
 
 .PHONY: all
