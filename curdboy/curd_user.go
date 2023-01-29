@@ -33,6 +33,13 @@ type User struct {
   
 }
 
+type UserV2 struct{
+Name string
+Age int
+ID int
+Cars Car
+}
+
 // 2တ
 func (this *User) fromEntUser(base *ent.User,selector *UserFieldsSelector)error{
   this.User = base

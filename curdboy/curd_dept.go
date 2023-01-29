@@ -33,6 +33,12 @@ type Dept struct {
   
 }
 
+type DeptV2 struct{
+Name string
+ID int
+
+}
+
 // 2တ
 func (this *Dept) fromEntDept(base *ent.Dept,selector *DeptFieldsSelector)error{
   this.Dept = base
